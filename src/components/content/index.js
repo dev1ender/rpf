@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import { Card, Row } from "react-bootstrap";
+import { Card, Row,Spinner } from "react-bootstrap";
 import Slider from "react-slick";
 import LineChart from "../lineCharts";
 import "./content.css";
 import {urls} from "../../config";
 import axios from 'axios';
-
+import EmptyComponent from "../emptyComp";
 const settings = {
   dots: false,
   infinite: true,
@@ -48,7 +48,10 @@ export default class Content extends Component {
       orgData:{},
       tickets:[],
       transaction:{},
-      searchKey:{}
+      searchKey:{},
+      ticketLoader :false,
+      transLoader:false,
+      orgLoader:false
     };
   }
   componentWillReceiveProps(props){
@@ -58,35 +61,41 @@ export default class Content extends Component {
       searchKey = org.item.name
     }
     // get org
+    this.setState({
+      ticketLoader :true,
+      transLoader:true,
+      orgLoader:true
+    })
     axios.get(urls["listOrg"]+org.item.id)
       .then(res => {
         const orgData = res.data.data;
-        this.setState({ orgData:orgData });
+        this.setState({orgLoader:false, orgData:orgData });
       })
     // get tickets
     axios.get(urls["getTickets"]+searchKey)
       .then(res => {
         const tickets = res.data.data.results;
-        this.setState({ tickets:tickets });
+        this.setState({ticketLoader:false, tickets:tickets });
       })
     // get transactions
-    console.log("tran",urls["getTrans"]+searchKey)
     axios.get(urls["getTrans"]+searchKey)
       .then(res => {
         const transaction = res.data.data;
-        this.setState({ transaction:transaction });
+        this.setState({transLoader:false, transaction:transaction });
       })
   }
 
   render() {
-    const {orgData,tickets,transaction} = this.state
+    const {orgData,tickets,transaction,orgLoader,transLoader,ticketLoader} = this.state
     return (
       <div>
+        
         <div>
         <Row>
             <div className="heading">Org Details</div>
           </Row>
-          {orgData && orgData.organizationName &&
+          {orgLoader && <Spinner animation="border" variant="secondary" />}
+          {orgData && orgData.organizationName ?
           <div>
             <Row>
             <Card className="information">
@@ -121,12 +130,16 @@ export default class Content extends Component {
             </Card>
           </Row>
           </div>
-          }
+          :!orgLoader && <EmptyComponent/>  
+        }
           
           <hr />
           <Row>
             <div className="heading">My Tickets</div>
           </Row>
+          {ticketLoader && <Spinner animation="border" variant="secondary" />}
+          {tickets &&
+              tickets.length > 0 ? 
           <Slider {...settings}>
             {tickets &&
               tickets.length > 0 &&
@@ -150,25 +163,30 @@ export default class Content extends Component {
                     </Card>
                   </div>
                 );
-              })}
+              })
+              }
           </Slider>
+          : !ticketLoader &&<EmptyComponent/>}
           <br/><br/>
           <hr />
           <Row>
             <div className="heading">Payments</div>
           </Row>
+          
         </div>
         <div className="transactions">
-          {transaction && transaction.length>2 && <LineChart data={transaction}/>}
+          {transLoader && <Spinner animation="border" variant="secondary" />}
+          {transaction && transaction.length>2 ? <LineChart data={transaction}/>:!transLoader && <EmptyComponent/>}
           
         </div>
         <hr />
         <Row>
           <div className="heading">Important Pointers</div>
         </Row>
+        {orgLoader && <Spinner animation="border" variant="secondary" />}
         <div>
           {orgData.deals &&
-            orgData.deals.length > 0 &&
+            orgData.deals.length > 0 ?
             orgData.deals.map((item) => {
               return (
                 <Card className="address" onClick={() =>window.open(item.url)
@@ -179,7 +197,7 @@ export default class Content extends Component {
                   </Card.Body>
                 </Card>
               );
-            })}
+            }):!orgLoader && <EmptyComponent/>}
         </div>
       </div>
     );

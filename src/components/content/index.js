@@ -176,7 +176,7 @@ export default class Content extends Component {
         </div>
         <div className="transactions">
           {transLoader && <Spinner animation="border" variant="secondary" />}
-          {transaction && transaction.length>2 ? <LineChart data={transaction}/>:!transLoader && <EmptyComponent/>}
+          {transaction && Object.entries(transaction).length>0 ? <LineChart data={transaction}/>:!transLoader && <EmptyComponent/>}
           
         </div>
         <hr />

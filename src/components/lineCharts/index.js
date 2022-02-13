@@ -36,60 +36,41 @@ export const options = {
   },
 };
 
-const colors = [
-  {
-    borderColor: 'rgb(255, 99, 132)',
-    backgroundColor: 'rgba(255, 99, 132, 0.5)',
-  },
-  {
-    borderColor: 'rgb(53, 162, 235)',
-    backgroundColor: 'rgba(53, 162, 235, 0.5)',
-  },
-  {
-    borderColor: 'rgb(53, 164, 235)',
-    backgroundColor: 'rgba(53, 162, 235, 0.5)',
-  },
-  {
-    borderColor: 'rgb(53, 164, 235)',
-    backgroundColor: 'rgba(53, 162, 235, 0.5)',
-  },
-  {
-    borderColor: 'rgb(53, 164, 225)',
-    backgroundColor: 'rgba(53, 162, 235, 0.5)',
-  },
-  {
-    borderColor: 'rgb(53, 164, 215)',
-    backgroundColor: 'rgba(53, 162, 235, 0.5)',
-  }
-]
-
 export default function LineChart({data}) {
-  let transactions = {}
-  let labels = []
-  data.map((item)=>{
-    labels.push(item.month)
-    const product = item.product
-    if (transactions[product] != null){
-      transactions[product].push(item.txns)
-    } 
-    else{
-      transactions[product] = [item.txns]
-    }
-  })
-  labels = labels.reverse()
-  let chartData = {
-    labels,
-    datasets:[]
+  let chartList = []
+  for (const [key, value] of Object.entries(data)) {
+    for (const [product, transactions] of Object.entries(value)) {
+      let dataset = []
+      let labels = []
+      transactions.map((item)=>{
+        labels.push(item.month)
+        dataset.push(item.txns)
+      })
+      if (dataset.length>1){
+        labels = labels.reverse()
+        const chartData = {
+          labels,
+          datasets:[{
+            borderColor: 'rgb(255, 99, 132)',
+            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            label:key+' '+product,
+            data:dataset.reverse()
+          }]
+        }
+        chartList.push(chartData)
+      }
   }
-  let i = 0
-  for (const [key, value] of Object.entries(transactions)) {
-    i+=1
-    let obj = colors[i]
-    obj.label = key
-    obj.data = value.reverse()
-    chartData.datasets.push(obj)
   }
-  console.log("charData",chartData)
-  
-  return <Line options={options} data={chartData} />;
+  return (
+    <div>
+      {chartList && chartList.length>0 && chartList.map((item)=>{
+        return(
+          <div>
+            <Line options={options} data={item}/>
+          </div>
+        )
+      })}
+    </div>
+    
+  )
 }

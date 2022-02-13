@@ -51,7 +51,6 @@ export default class SingleSelect extends Component {
 
   render() {
     const { orgList} = this.state;
-    console.log("orgList",orgList)
     return (
       <Fragment>
         <Select

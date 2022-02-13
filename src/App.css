@@ -36,3 +36,25 @@
     transform: rotate(360deg);
   }
 }
+
+.dropDownContainer {
+ display: flex;
+ justify-content: center;
+ align-items: center;
+  height: 150px;
+}
+
+.dropDownContainer .dropDown {
+  width: 80vh;
+}
+
+.contentContainer {
+  max-width: 1024px;
+  margin-left: auto;
+  margin-right: auto;
+  height: fit-content;
+  margin-bottom: 32px;
+  border-radius: 25px;
+  padding: 50px;
+  border: 1px blue solid;
+}

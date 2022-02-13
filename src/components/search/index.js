@@ -39,8 +39,10 @@ export default class SingleSelect extends Component {
   }
 
   onSelect=(data)=>{
-    console.log("onSelect",data)
-    this.props.setOrg(data.value,this.state.searchKey)
+    this.props.setOrg(data.value)
+    if (this.state.searchKey !==''){
+      localStorage.setItem("searchKey",this.state.searchKey)
+    }
   }
 
   onInputChange=(props)=>{

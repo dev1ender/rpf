@@ -36,13 +36,36 @@ export const options = {
   },
 };
 
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-
+const colors = [
+  {
+    borderColor: 'rgb(255, 99, 132)',
+    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+  },
+  {
+    borderColor: 'rgb(53, 162, 235)',
+    backgroundColor: 'rgba(53, 162, 235, 0.5)',
+  },
+  {
+    borderColor: 'rgb(53, 164, 235)',
+    backgroundColor: 'rgba(53, 162, 235, 0.5)',
+  },
+  {
+    borderColor: 'rgb(53, 164, 235)',
+    backgroundColor: 'rgba(53, 162, 235, 0.5)',
+  },
+  {
+    borderColor: 'rgb(53, 164, 225)',
+    backgroundColor: 'rgba(53, 162, 235, 0.5)',
+  },
+  {
+    borderColor: 'rgb(53, 164, 215)',
+    backgroundColor: 'rgba(53, 162, 235, 0.5)',
+  }
+]
 
 export default function LineChart({data}) {
   let transactions = {}
   let labels = []
-  let datasets = []
   data.map((item)=>{
     labels.push(item.month)
     const product = item.product
@@ -53,15 +76,20 @@ export default function LineChart({data}) {
       transactions[product] = [item.txns]
     }
   })
+  labels = labels.reverse()
   let chartData = {
     labels,
     datasets:[]
   }
+  let i = 0
   for (const [key, value] of Object.entries(transactions)) {
-    let obj = {}
+    i+=1
+    let obj = colors[i]
     obj.label = key
     obj.data = value.reverse()
     chartData.datasets.push(obj)
   }
+  console.log("charData",chartData)
+  
   return <Line options={options} data={chartData} />;
 }

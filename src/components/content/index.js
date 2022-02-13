@@ -7,7 +7,7 @@ import {urls} from "../../config";
 import axios from 'axios';
 
 const settings = {
-  dots: true,
+  dots: false,
   infinite: true,
   speed: 500,
   slidesToShow: 4,
@@ -52,8 +52,8 @@ export default class Content extends Component {
     };
   }
   componentWillReceiveProps(props){
-    let {org,searchKey} = props
-    console.log("serarch key",searchKey)
+    let {org} = props
+    const searchKey = localStorage.getItem("searchKey")
     if (searchKey === null){
       searchKey = org.item.name
     }
@@ -70,12 +70,8 @@ export default class Content extends Component {
         this.setState({ tickets:tickets });
       })
     // get transactions
-    // axios.get(urls["getTrans"]+searchKey)
-    //   .then(res => {
-    //     const transaction = res.data.data;
-    //     this.setState({ transaction:transaction });
-    //   })
-      axios.get(urls["getTrans"]+"gokwik")
+    console.log("tran",urls["getTrans"]+searchKey)
+    axios.get(urls["getTrans"]+searchKey)
       .then(res => {
         const transaction = res.data.data;
         this.setState({ transaction:transaction });
@@ -102,13 +98,6 @@ export default class Content extends Component {
           <Row>
             <Card
               className="address"
-              onClick={() =>
-                window.open(
-                  orgData.deals &&
-                    orgData.deals.length > 0 &&
-                    orgData.deals[0].url
-                )
-              }
             >
               <Card.Body>
                 <Card.Text>
@@ -182,7 +171,8 @@ export default class Content extends Component {
             orgData.deals.length > 0 &&
             orgData.deals.map((item) => {
               return (
-                <Card className="address">
+                <Card className="address" onClick={() =>window.open(item.url)
+                }>
                   <Card.Body>
                     <Card.Text>Deal value : {item.dealValue}</Card.Text>
                     <Card.Text>Deal Status : {item.status}</Card.Text>
